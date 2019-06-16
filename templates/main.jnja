@@ -6,6 +6,6 @@
 </head>
 <body>
 	<div class="chart-container">
-		<canvas id="chart-canvas" width="600" height="600"></canvas>
+		<canvas id="chart-canvas" width="1200" height="600"></canvas>
 	</div>
 </body>

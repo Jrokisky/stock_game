@@ -1,23 +1,17 @@
 from flask import Flask
 from flask import render_template
 from fbm import FBM
-from datetime import datetime
 
+
+import time
 import math
 import json
 
+NUM_TICKS = 390 # 6.5 hours * 60 minutes
+
 app = Flask(__name__)
-data = []
-ranges = {
-    'x': {
-        'min': 0,
-        'max': 60,
-    },
-    'y': {
-        'min': -1.2,
-        'max': 1.2,
-    },
-}
+app.fbm = FBM(n=NUM_TICKS, hurst=0.75, length=NUM_TICKS, method='daviesharte')
+app.fbm_sample = app.fbm.fbm()
 
 @app.route("/")
 def index():
@@ -25,22 +19,46 @@ def index():
 
 @app.route("/current-prices")
 def curr_prices():
-    curr_seconds = datetime.now().second
-    rad = (curr_seconds * 2 * math.pi) / 60
-    val = math.sin(rad)
-    color = "green"
-    global data
+    curr_tick = get_current_tick()
+    ranges = build_ranges(app.fbm_sample)
+    visible_prices = app.fbm_sample[1:curr_tick]
+    data = []
+    last_price = 0
+    curr_sec = 0;
 
-    if len(data) > 0:
-        last_datum = data[len(data)-1]
-
-        if curr_seconds < last_datum['time']:
-            data.clear()
-
-        if val < last_datum['val']:
+    for visible_price in visible_prices:
+        if visible_price > last_price:
+            color = "green"
+        else:
             color = "red"
-        elif val == last_datum['val']:
-            color = last_datum['color']
 
-    data.append({'time': curr_seconds, 'val': val, 'color': color})
+        last_price = visible_price
+        data.append({'time': curr_sec, 'val': visible_price, 'color': color})
+        curr_sec += 1
+        
+
     return json.dumps({'ranges': ranges, 'data': data})
+
+def build_ranges(data):
+    max_abs_y = abs(max(data, key=abs))
+
+    ranges = {
+        'x': {
+            'min': 0,
+            'max': NUM_TICKS,
+        },
+        'y': {
+            'min': -max_abs_y,
+            'max': max_abs_y,
+        },
+    }
+    return ranges
+
+# Tag data with color
+def annotate_data(data):
+    return data
+
+def get_current_tick():
+    curr_seconds = time.time()
+    return int(curr_seconds) % NUM_TICKS
+
