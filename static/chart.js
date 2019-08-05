@@ -1,7 +1,15 @@
-const grid_size = 5;
+const grid_size = 20;
 
-function getData() {
-	$.getJSON("/current-prices", function(data) {
+$(document).ready(function() {
+	$("#gen-button").click(function() {
+		volatility = $("#volatility-in").val();
+		trend = $("#trend-in").val();
+		getData(volatility, trend);
+	});
+});
+
+function getData(volatility, trend) {
+	$.getJSON("/current-prices?volatility=".concat(volatility).concat("&trend=").concat(trend), function(data) {
 		drawChart(data);
 	});
 };
@@ -43,8 +51,5 @@ function get_coord(min, max, dim, val) {
 	return ((val - min) * dim) / span;
 };
 
-window.setInterval(function() {
-	getData();
-}, 500);
 
 

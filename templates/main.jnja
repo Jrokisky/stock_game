@@ -1,11 +1,18 @@
 <!DOCTYPE html>
 <head>
 	<title>CAPITAL GAINS</title>
-	<script src="{{ url_for('static', filename='chart.js') }}"></script>
 	<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+	<script src="{{ url_for('static', filename='chart.js') }}"></script>
 </head>
 <body>
 	<div class="chart-container">
-		<canvas id="chart-canvas" width="1200" height="600"></canvas>
+		<canvas id="chart-canvas" width="600" height="600"></canvas>
+	</div>
+	<div>
+		<span>Volatility:</span>
+		<input type="text" name="volatility-in" id="volatility-in" value="0.25"> 
+		<span>Trend:</span>
+		<input type="text" name="trend-in" id="trend-in" value="0.02"> 
+		<button type="button" id="gen-button">Generate</button>
 	</div>
 </body>
