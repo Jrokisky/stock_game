@@ -11,8 +11,20 @@
 	<div>
 		<span>Volatility:</span>
 		<input type="text" name="volatility-in" id="volatility-in" value="0.25"> 
+		<select name="vol-fn-in" id="vol-fn-in"> 
+            <option value="quadratic">Quadratic</option>
+            <option value="linear">Linear</option>
+            <option value="constant">Constant</option>
+        </select>
+        <br>
 		<span>Trend:</span>
 		<input type="text" name="trend-in" id="trend-in" value="0.02"> 
+		<select name="trend-fn-in" id="trend-fn-in"> 
+            <option value="quadratic">Quadratic</option>
+            <option value="linear">Linear</option>
+            <option value="constant">Constant</option>
+        </select>
+        <br>
 		<button type="button" id="gen-button">Generate</button>
 	</div>
 </body>

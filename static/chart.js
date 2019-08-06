@@ -1,17 +1,20 @@
-const grid_size = 20;
+const grid_size = 5;
 
 $(document).ready(function() {
 	$("#gen-button").click(function() {
 		volatility = $("#volatility-in").val();
 		trend = $("#trend-in").val();
-		getData(volatility, trend);
+        vol_fn = $("#vol-fn-in").val();
+        trend_fn = $("#trend-fn-in").val();
+		getData(volatility, trend, vol_fn, trend_fn);
 	});
 });
 
-function getData(volatility, trend) {
-	$.getJSON("/current-prices?volatility=".concat(volatility).concat("&trend=").concat(trend), function(data) {
-		drawChart(data);
-	});
+function getData(volatility, trend, vol_fn, trend_fn) {
+	$.getJSON("current-prices?volatility=".concat(volatility)
+        .concat("&trend=").concat(trend)
+        .concat("&vol-fn=").concat(vol_fn)
+        .concat("&trend-fn=").concat(trend_fn), data => drawChart(data));
 };
 
 function drawChart(data) {

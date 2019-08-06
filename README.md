@@ -1,3 +1,2 @@
-# Stock Game 
+# CAPITAL GAINS
 
-### Name Suggestions

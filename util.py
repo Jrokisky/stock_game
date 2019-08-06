@@ -3,6 +3,9 @@ import math
 def linear_movement(magnitude, num_ticks):
     return lambda tick_idx: magnitude * (tick_idx / num_ticks)
 
+def constant_movement(magnitude, num_ticks):
+    return lambda tick_idx: magnitude
+
 def quadratic_movement(magnitude, num_ticks):
     return lambda tick_idx: quadratic(magnitude, num_ticks, tick_idx) 
 

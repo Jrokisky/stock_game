@@ -24,8 +24,8 @@ class Tick:
         return self.close_price
 
     def compute_close_price(self):
-        window_size_absolute = self.open_price * self.window_size
         biased_open_price = self.open_price * (1 + self.window_bias)
+        window_size_absolute = biased_open_price * self.window_size
         max_close_price = biased_open_price + window_size_absolute
         min_close_price = biased_open_price - window_size_absolute
         return uniform(min_close_price, max_close_price)
