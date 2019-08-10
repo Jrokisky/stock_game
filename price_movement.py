@@ -38,6 +38,11 @@ class PriceMovement:
             ticks.append(nxt_tick)
 
         return ticks
+    
+    def get_close_price(self):
+        if not hasattr(self, 'ticks'):
+            self.ticks = self.generate_ticks()
+        return self.ticks[-1].get_close_price()       
 
     def get_ranges(self):
         all_open_prices = []

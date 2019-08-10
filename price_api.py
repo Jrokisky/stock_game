@@ -18,33 +18,13 @@ def create_app():
     def index():
         return render_template('main.jnja')
 
-    @app.route("/current-prices")
+    @app.route("/current-prices", methods=['POST'])
     def curr_prices():
+        print(request)
         volatility = request.args.get('volatility', 0.25, type=float)
         trend = request.args.get('trend', 0.02, type=float)
         vol_fn_in = request.args.get('vol-fn', "linear")
         trend_fn_in = request.args.get('trend-fn', "linear")
-
-        if vol_fn_in == "constant":
-            vol_fn = constant_movement
-        elif vol_fn_in == "linear":
-            vol_fn = linear_movement
-        else:
-            vol_fn = quadratic_movement
-
-        if trend_fn_in == "constant":
-            trend_fn = constant_movement
-        elif trend_fn_in == "linear":
-            trend_fn = linear_movement
-        else:
-            trend_fn = quadratic_movement
-
-        pm = PriceMovement(50.0, num_ticks, 
-            vol_fn(volatility, num_ticks), 
-            trend_fn(trend, num_ticks))
-
-        print(vol_fn)
-        print(volatility)
 
         ticks = pm.get_ticks()
         ranges = pm.get_ranges()
