@@ -1,21 +1,44 @@
-const grid_size = 5;
+const GRID_SIZE = 5;
+const MIN_PRICE_DRAW = 2;
 
 $(document).ready(function() {
+    $("#add-segment-button").click(function() {
+        $new_segment = $("#segments > .segment").first().clone();
+        $("#segments").append($new_segment);
+
+        $(".remove-segment-button").click(function() {
+            $(this).parent().remove();
+        });
+    });
+
+
 	$("#gen-button").click(function() {
-		volatility = $("#volatility-in").val();
-		trend = $("#trend-in").val();
-        vol_fn = $("#vol-fn-in").val();
-        trend_fn = $("#trend-fn-in").val();
-		getData(volatility, trend, vol_fn, trend_fn);
+        var config = [];
+        $("#segments > .segment").each( function(idx, val) {
+            ticks = $(this).find('.ticks-in').val();
+		    volatility = $(this).find(".volatility-in").val();
+		    trend = $(this).find(".trend-in").val();
+            vol_fn = $(this).find(".vol-fn-in").val();
+            trend_fn = $(this).find(".trend-fn-in").val();
+
+            config.push({
+                "num_ticks": Number(ticks),
+                "volatility_window_size": Number(volatility),
+                "volatility_window_fn": vol_fn,
+                "trend_bias": Number(trend),
+                "trend_bias_fn": trend_fn,
+            });
+        });
+        $.ajax({
+            type: 'POST',
+            contentType: 'application/json',
+            url: 'current-prices',
+            dataType : 'json',
+            data: JSON.stringify(config),
+            success : data => drawChart(data)
+        });
 	});
 });
-
-function getData(volatility, trend, vol_fn, trend_fn) {
-	$.getJSON("current-prices?volatility=".concat(volatility)
-        .concat("&trend=").concat(trend)
-        .concat("&vol-fn=").concat(vol_fn)
-        .concat("&trend-fn=").concat(trend_fn), data => drawChart(data));
-};
 
 function drawChart(data) {
 	var canvas = document.getElementById('chart-canvas');
@@ -23,36 +46,48 @@ function drawChart(data) {
 	var height = canvas.height;
 	var ctx = canvas.getContext("2d");
 
-	var min_x = data.ranges.x.min
-	var max_x = data.ranges.x.max
-	var min_y = data.ranges.y.min
-	var max_y = data.ranges.y.max
+    // The maximum amount the price will move in any one direction from base_price.
+	var max_price_diff = data.ranges.y.max_diff;
 
 	// Background.
 	ctx.fillStyle = "black";
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-	for (var i = 0; i < data.data.length; i++) {
-		var datum = data.data[i];
-		var y = height - get_coord(min_y, max_y, height, datum.val);
-		var x = get_coord(min_x, max_x, width, datum.time);
+    var base_price = data.data[0].price;
+    // center of the canvas should represent the starting price.
+    var base_y = height/2;
 
-		var quot_x = Math.floor(x/grid_size);
-		var quot_y = Math.floor(y/grid_size);
-		var grid_x = quot_x * grid_size;
-		var grid_y = quot_y * grid_size;
+    // At max, use 80% of the canvas and account for 0,0 being top left.
+    var scale_factor = -((base_y*0.8) / max_price_diff);
+
+	for (var i = 0; i < (data.data.length-1); i++) {
+		var datum = data.data[i];
+        var next_datum = data.data[i+1]
+
+		var price_diff = next_datum.price - datum.price;
+        console.log(datum.price);
+        console.log(price_diff);
+        var color = price_diff > 0 ? 'green' : 'red';
+
+        var rect_x = i * GRID_SIZE;
+        var rect_width = GRID_SIZE;
+        var rect_y = base_y + ((datum.price - base_price) * scale_factor)
+        var rect_height = price_diff * scale_factor;
+
+        // Handle case of small price movement.
+        if (rect_height < MIN_PRICE_DRAW && rect_height > 0) {
+            rect_height = MIN_PRICE_DRAW;
+            color = 'white';
+        }
+        else if (rect_height > -MIN_PRICE_DRAW && rect_height < 0) {
+            rect_height = -MIN_PRICE_DRAW;
+            color = 'white';
+        }
 
 		ctx.beginPath();
-		ctx.rect(grid_x, grid_y, grid_size, grid_size);
-		ctx.fillStyle = datum.color;
+		ctx.rect(rect_x, rect_y, rect_width, rect_height);
+		ctx.fillStyle = color;
 		ctx.fill();
 	}
 };
-
-function get_coord(min, max, dim, val) {
-	var span = max - min;
-	return ((val - min) * dim) / span;
-};
-
-
 

@@ -3,6 +3,7 @@ from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 
 from price_movement import PriceMovement
+from util import linear_movement, quadratic_movement, constant_movement
 
 class PriceCollection:
     """
@@ -48,7 +49,8 @@ class PriceCollection:
         try:
             validate(price_movement_json, schema)
             return True
-        except ValidationError:
+        except ValidationError as err:
+            print(err)
             return False
 
     def get_price_movements(self):
@@ -58,11 +60,11 @@ class PriceCollection:
 
     def generate_price_movements(self):
         price_movements = []
-        price_movements_config = json.loads(self.price_movement_json)
+        price_movements_config = self.price_movement_json
         base_price = self.base_price
 
         for price_movement_config in price_movements_config:
-            vol_fn = price_movement_config['volatility_window_fn']
+            vol_fn_in = price_movement_config['volatility_window_fn']
             if vol_fn_in == "constant":
                 vol_fn = constant_movement
             elif vol_fn_in == "linear":
@@ -82,7 +84,7 @@ class PriceCollection:
             trend = price_movement_config['trend_bias']
             num_ticks = price_movement_config['num_ticks']
 
-            pm = PriceMovement(self, base_price, num_ticks, 
+            pm = PriceMovement(base_price, num_ticks, 
                 vol_fn(volatility, num_ticks), 
                 trend_fn(trend, num_ticks))
             

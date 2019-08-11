@@ -1,0 +1,8 @@
+#segments {
+    border-style: solid;
+    width: 50%;
+}
+
+#segments > .segment {
+    border-style: solid;
+}

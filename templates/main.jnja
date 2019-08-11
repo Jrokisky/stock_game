@@ -3,28 +3,39 @@
 	<title>CAPITAL GAINS</title>
 	<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 	<script src="{{ url_for('static', filename='chart.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
 	<div class="chart-container">
-		<canvas id="chart-canvas" width="600" height="600"></canvas>
+		<canvas id="chart-canvas" width="1600" height="500"></canvas>
 	</div>
-	<div>
-		<span>Volatility:</span>
-		<input type="text" name="volatility-in" id="volatility-in" value="0.25"> 
-		<select name="vol-fn-in" id="vol-fn-in"> 
-            <option value="quadratic">Quadratic</option>
-            <option value="linear">Linear</option>
-            <option value="constant">Constant</option>
-        </select>
-        <br>
-		<span>Trend:</span>
-		<input type="text" name="trend-in" id="trend-in" value="0.02"> 
-		<select name="trend-fn-in" id="trend-fn-in"> 
-            <option value="quadratic">Quadratic</option>
-            <option value="linear">Linear</option>
-            <option value="constant">Constant</option>
-        </select>
+	<div id="segments">
+        <div class="segment">
+            <span>Num Ticks:</span>
+		    <input type="text" name="ticks-in" class="ticks-in" value="22"> 
+            <br>
+		    <span>Volatility:</span>
+		    <input type="text" name="volatility-in" class="volatility-in" value="0.25"> 
+		    <select name="vol-fn-in" class="vol-fn-in"> 
+                <option value="quadratic">Quadratic</option>
+                <option value="linear">Linear</option>
+                <option value="constant">Constant</option>
+            </select>
+            <br>
+		    <span>Trend:</span>
+		    <input type="text" name="trend-in" class="trend-in" value="0.02"> 
+		    <select name="trend-fn-in" class="trend-fn-in"> 
+                <option value="quadratic">Quadratic</option>
+                <option value="linear">Linear</option>
+                <option value="constant">Constant</option>
+            </select>
+            <br>
+		    <button type="button" class="remove-segment-button">Remove</button>
+        </div>
+	</div>
+    <div id="controls">
+		<button type="button" id="add-segment-button">Add Segment</button>
         <br>
 		<button type="button" id="gen-button">Generate</button>
-	</div>
+    </div>
 </body>

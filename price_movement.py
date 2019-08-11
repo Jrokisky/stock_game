@@ -43,22 +43,3 @@ class PriceMovement:
         if not hasattr(self, 'ticks'):
             self.ticks = self.generate_ticks()
         return self.ticks[-1].get_close_price()       
-
-    def get_ranges(self):
-        all_open_prices = []
-        for t in self.ticks:
-            all_open_prices.append(t.get_open_price())
-
-        max_abs_y = abs(max(all_open_prices, key=abs))
-
-        ranges = {
-            'x': {
-                'min': 0,
-                'max': self.num_ticks,
-            },
-            'y': {
-                'min': -max_abs_y,
-                'max': max_abs_y,
-            },
-        }
-        return ranges
